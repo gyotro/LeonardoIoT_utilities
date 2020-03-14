@@ -39,6 +39,10 @@ mapOut.put("devSn", jsonIn.devSn)
 mapOut.put("onTime", jsonIn.onTime)
 mapOut.put("ontTimeMillisUTC", jsonIn.ontTimeMillisUTC)
 
+long dateMillis = jsonIn.ontTimeMillisUTC
+
+def date = JsonUtil.convertEpoch_to_date(dateMillis)
+
 def jsout = new JsonOutput()
 
 String sJout = JsonOutput.prettyPrint( (String) jsout.toJson(mapOut) )
