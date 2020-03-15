@@ -102,13 +102,13 @@ class MQTT_RunClient implements MqttCallback{
 				newFile.write(sJout, "utf-8")
 				
 				
-		} catch (ParseException e1) {	
+		} catch (Exception e1) {	
 			println e1.printStackTrace()
 		}
 
 	}
 	
-	public void runClient(String sDeviceAlternateId) throws InterruptedException {
+	public void runClient(String[] sDeviceAlternateId) throws InterruptedException {
 		
 		// Setting up the MQTT client
 		connOpts = new MqttConnectOptions();
@@ -121,13 +121,8 @@ class MQTT_RunClient implements MqttCallback{
 		// Connect to broker
 		while (true)
 			try {
-				MemoryPersistence persistence1 = new MemoryPersistence();
 				
-				// si crea un MQTT Client che si sottoscrive a tutti i topic dei device di Alleantia e quindi riceve i pacchetti in arrivo da Alleantia
-				/*
-				 * in realtà questi topic, nonostante arrivino anche sul gateway, non vanno in errore
-				 * sul gateway perché il loro TOPIC non è standard (measures/DeviceAletraneId)
-				 */
+				MemoryPersistence persistence1 = new MemoryPersistence();
 				
 				mqttForwardClient = new MqttClient(brokerAddress, MqttClient.generateClientId(), persistence1);
 				MqttConnectOptions connOpts = new MqttConnectOptions();
@@ -137,8 +132,6 @@ class MQTT_RunClient implements MqttCallback{
 				connOpts.setMaxInflight(1000);
 				mqttForwardClient.setCallback(this);
 				mqttForwardClient.connect(connOpts);
-
-				// subscribe to all topics specified in converterConfig (device/telemetry)
 
 				println "AENConverterInterceptor connected to " + brokerAddress;
 				
@@ -170,7 +163,7 @@ class MQTT_RunClient implements MqttCallback{
 				}
 			}
 		
-			public void loadSubscriptions(String sTopicToSubscribe) {
+			public void loadSubscriptions(String[] sTopicToSubscribe) {
 		
 				println "Starting Subscription....."
 				
@@ -195,10 +188,13 @@ class MQTT_RunClient implements MqttCallback{
 //					QoSAL.add(0);
 //				}
 				
-				sTopicToSubscribe = sTopicToSubscribe + "/telemetry"
-				topicFiltersAL.add(sTopicToSubscribe)
-				QoSAL.add(0)
-				
+				for( String s : sTopicToSubscribe )
+				{
+					String sTopic = s + "/telemetry"
+					topicFiltersAL.add(sTopic)
+					println "Adding topic $sTopic"
+					QoSAL.add(0)
+				}
 				// si converte da Lista ad array di oggetti e poi da array di oggetti in array di stringhe
 				Object[] objectTopicList = topicFiltersAL.toArray();
 				String[] topicFilters = Arrays.copyOf(objectTopicList, objectTopicList.length, String[].class);

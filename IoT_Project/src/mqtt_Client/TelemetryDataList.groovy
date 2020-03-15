@@ -113,7 +113,7 @@ String sJout = JsonOutput.prettyPrint((String) jsout.toJson(mapOut))
 //File newFile = new File("C:/Users/InnovatesApp/Desktop/msg_2.json")
 //newFile.write(sJout, "utf-8")
 
-MQTT_Client.MQTT_ClientSend("measures/testMessage", sJout)
+MQTT_IngectMessages.MQTT_ClientSend("measures/testMessage", sJout)
 
 
 

@@ -7,7 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.UUID;
 
-class MQTT_Client {
+class MQTT_IngectMessages {
 
 	public static MQTT_ClientSend(String sTopic, String sMessage) 
 	{
