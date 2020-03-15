@@ -71,12 +71,12 @@ for (LinkedHashMap currentJson : listaJson)
 //		}
 //	}
 
-listaJsonOutVector_bk.add( listaJson2.find{it.varId == 6121} )
+// listaJsonOutVector_bk.add( listaJson2.find{it.varId == 6121} )
 
 	
 //Stream<LinkedHashMap<String, Object>> filteredList = listaJson2.stream().filter(  )
 
-date = (String) System.currentTimeMillis()
+//date = (String) System.currentTimeMillis()
 // Da completare
 //	listaJson2.each { item -> listaJsonOutVector_bk.add( item.each { key, value -> 
 //	listaJsonOut_bk.put(key, ( ( ( (String) key).equalsIgnoreCase("millisUTC") ) ? "testRep" : value) ) } ) }

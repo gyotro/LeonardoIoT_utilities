@@ -7,7 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.Undefined.EXCEPTION
 import java.text.ParseException
@@ -41,7 +41,9 @@ class MQTT_RunClient implements MqttCallback{
 	public void messageArrived(String topic, MqttMessage message)
 	{
 		String arrivedMsg = null;
-		HashMap msgOut = new HashMap()
+		//HashMap msgOut = new HashMap()
+		LinkedHashMap mapOut= new LinkedHashMap()
+		HashMap msgIn
 		
 		if (message.getPayload() != null && !message.getPayload().toString().isEmpty() && !message.isRetained()) {
 			arrivedMsg = new String(message.getPayload());
@@ -51,37 +53,62 @@ class MQTT_RunClient implements MqttCallback{
 
 		println("-------------------------------------------------");
 		println("| Topic:" + topic);
-		println("| Message: " + arrivedMsg);
+//		println("| Message: " + arrivedMsg);
 		println("-------------------------------------------------");
 		
 		JsonSlurper arrivedJObj = new JsonSlurper()
 		try {
-			HashMap msgIn = arrivedJObj.parse(arrivedMsg)
+				msgIn = arrivedJObj.parseText(arrivedMsg)
+				
+				// se non c'è il telemetry data list si esce
+				if(!msgIn.containsKey("telemetryDataList"))
+				{
+					println "No telemetryDataList in the message"
+					return;
+				}
+				
+				ArrayList<HashMap<String , ?>> telemetryJArr = msgIn.telemetryDataList
+				ArrayList<HashMap<String , ?>> listaJsonOutVector_bk = new ArrayList<HashMap<String , ?>>()
+				
+		//		for (HashMap currentJson : telemetryJArr)
+		//		{
+		//			currentJson.eachWithIndex{ entry, index -> (entry.getKey("varId") ) ? date : entry.value)) }
+		//			listaJsonOut.add(listaJsonOut_bk)
+		//		}
+				listaJsonOutVector_bk.add( telemetryJArr.find{it.varId == 5005} )
+				
+//				println listaJsonOutVector_bk.get(0)
+//				println listaJsonOutVector_bk.size
+				
+				if(listaJsonOutVector_bk.isEmpty() || listaJsonOutVector_bk.size == 0 || listaJsonOutVector_bk.get(0) == null)
+				{
+					println "No varId 5005 in the message"
+					return
+				}
+				mapOut.put("telemetryDataList", listaJsonOutVector_bk)
+				mapOut.put("devSn", msgIn.devSn)
+				mapOut.put("onTime", msgIn.onTime)
+				mapOut.put("ontTimeMillisUTC", msgIn.ontTimeMillisUTC)
+				
+				def jsout = new JsonOutput()
+				
+				String sJout = JsonOutput.prettyPrint((String) jsout.toJson(mapOut))
+				
+				String sFileName = System.currentTimeMillis() + ".json"
+				
+				println "Writing File $sFileName"
+				
+				File newFile = new File(UsefulParam.sDirOutput + sFileName)
+				newFile.write(sJout, "utf-8")
+				
+				
 		} catch (ParseException e1) {	
 			println e1.printStackTrace()
 		}
-		
-		// se non c'è il telemetry data list si esce
-		if(!msgIn.containsKey("telemetryDataList")) 
-		{
-			return;
-		}
-		
-		ArrayList<HashMap<String , ?>> telemetryJArr = msgIn.telemetryDataList
-		ArrayList<HashMap<String , ?>> listaJsonOutVector_bk = msgIn.telemetryDataList
-		
-//		for (HashMap currentJson : telemetryJArr)
-//		{
-//			currentJson.eachWithIndex{ entry, index -> (entry.getKey("varId") ) ? date : entry.value)) }
-//			listaJsonOut.add(listaJsonOut_bk)
-//		}
-		listaJsonOutVector_bk.add( listaJson2.find{it.varId == 5005} )
-		
-		
 
 	}
 	
-	public void runClient() throws InterruptedException {
+	public void runClient(String sDeviceAlternateId) throws InterruptedException {
 		
 		// Setting up the MQTT client
 		connOpts = new MqttConnectOptions();
@@ -112,9 +139,10 @@ class MQTT_RunClient implements MqttCallback{
 				mqttForwardClient.connect(connOpts);
 
 				// subscribe to all topics specified in converterConfig (device/telemetry)
-				this.loadSubscriptions();
 
 				println "AENConverterInterceptor connected to " + brokerAddress;
+				
+				loadSubscriptions(sDeviceAlternateId)
 
 				break;
 
@@ -144,6 +172,8 @@ class MQTT_RunClient implements MqttCallback{
 		
 			public void loadSubscriptions(String sTopicToSubscribe) {
 		
+				println "Starting Subscription....."
+				
 //				String configJsonStr = InterceptorActivator.configJson.toString();
 //				JSONObject configJson = null;
 //				JSONArray topicsToSubscribe = null;
@@ -181,8 +211,10 @@ class MQTT_RunClient implements MqttCallback{
 		
 				try {
 					mqttForwardClient.subscribe(topicFilters, qosFilters);
+					println "Subscribed to $topicFilters"
 				} catch (MqttException e) 
 				{
+					println "Error Subscribing to $topicFilters"
 					e.printStackTrace();
 				}
 			}
