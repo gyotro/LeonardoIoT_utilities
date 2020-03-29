@@ -27,7 +27,7 @@ ArrayList<LinkedHashMap> listaJson2 = TelemetryJson.telemetryDataList
 ArrayList<LinkedHashMap<String, Object>> listaJsonOut = new ArrayList<LinkedHashMap<String, Object>>()
 ArrayList<LinkedHashMap<String, String> > listaJsonOutVector_bk = new ArrayList<LinkedHashMap>()
 
-LinkedHashMap listaJsonOut_bk = new LinkedHashMap()
+LinkedHashMap listaJsonOut_bk;
 LinkedHashMap msgOut = new LinkedHashMap()
 
 
@@ -50,8 +50,9 @@ LinkedHashMap msgOut = new LinkedHashMap()
 	
 for (LinkedHashMap currentJson : listaJson)
 		{
-		date= System.currentTimeMillis() + ""
-		currentJson.each { entry -> listaJsonOut_bk.put(entry.key, (( ( (String) entry.key).equalsIgnoreCase("millisUTC") ) ? date : entry.value)) }
+		date = ( System.currentTimeMillis() - UsefulParam.delay )  + ""
+		listaJsonOut_bk = new LinkedHashMap()
+		currentJson.each { entry -> listaJsonOut_bk.put(entry.key, (( ( (String) entry.key).equalsIgnoreCase("millisUTC") ) ? date + "" : entry.value)) }
 		listaJsonOut.add(listaJsonOut_bk)
 	}
 //	
@@ -113,7 +114,7 @@ String sJout = JsonOutput.prettyPrint((String) jsout.toJson(mapOut))
 //File newFile = new File("C:/Users/InnovatesApp/Desktop/msg_2.json")
 //newFile.write(sJout, "utf-8")
 
-MQTT_IngectMessages.MQTT_ClientSend("measures/testMessage", sJout)
+MQTT_IngectMessages.MQTT_ClientSend("3/telemetry", sJout)
 
 
 
