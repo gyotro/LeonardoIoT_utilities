@@ -32,7 +32,7 @@ class MQTT_IngectMessages {
 			println("Message published");
 			sampleClient.disconnect();
 			println("Disconnected");
-			System.exit(0);
+			//System.exit(0); //--> commentato per il caso con while
 		} catch(MqttException me) {
 			println("reason "+me.getReasonCode());
 			println("msg "+me.getMessage());
