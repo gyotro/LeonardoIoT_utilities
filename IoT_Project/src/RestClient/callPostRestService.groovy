@@ -6,13 +6,17 @@ import wslite.rest.ContentType
 import wslite.rest.RESTClient
 import wslite.rest.RESTClientException
 
+/*
+ per la documentazione di groovy-wslite: https://github.com/jwagenleitner/groovy-wslite
+ */
+
 String IDSensorTypeH = "aa456112-1775-4f05-8196-79998c343e9b"
 String IDSensorTypeS = "e0af9c88-53a6-4d43-ae84-8a62c165211a"
 String IDSensorTypeS1 = "4d841ada-db44-4ea6-95d6-bfbe50f7d92e"
 String IDSensorTypeS2 = "c1e87027-270c-4da0-9f5c-e3a40dd73484"
 String IDSensorTypeL = "0a6b4238-6d85-4f90-8b94-5f0ce9632e67"
 
-RESTClient client = new RESTClient("https://46600771-8c98-4233-9437-783108b5d21f.eu10.cp.iot.sap/46600771-8c98-4233-9437-783108b5d21f/iot/core/api/v1/tenant/1")
+RESTClient client = new RESTClient( InstanceParameter.sURLIoTS )
 /*
 RESTClient clientH = new RESTClient("https://46600771-8c98-4233-9437-783108b5d21f.eu10.cp.iot.sap/46600771-8c98-4233-9437-783108b5d21f/iot/core/api/v1/tenant/1")
 RESTClient clientS = new RESTClient("https://46600771-8c98-4233-9437-783108b5d21f.eu10.cp.iot.sap/46600771-8c98-4233-9437-783108b5d21f/iot/core/api/v1/tenant/1")
@@ -20,8 +24,8 @@ RESTClient clientL = new RESTClient("https://46600771-8c98-4233-9437-783108b5d21
 */
 
 //client.authorization = new HTTPBasicAuthorization("dev", "!d3Vu5r_")
-def auth = "dev:!d3Vu5r_"
-def authEncoded = Base64.getEncoder().encodeToString(auth.getBytes())
+def auth =  InstanceParameter.IoTS_Pwd
+def authEncoded = Base64.getEncoder().encodeToString( auth.getBytes() )
 def path = "/capabilities"
 def pathSensorH = "/sensorTypes/$IDSensorTypeH/capabilities"
 def pathSensorS = "/sensorTypes/$IDSensorTypeS/capabilities"
@@ -130,7 +134,7 @@ try {
 
         String jsonReq2 = builder2.toPrettyString()
         Closure cData2 = {
-            "type" ContentType.JSON
+            "type" ContentType.JSON  // se é valorizzato il campo inferiore questo tag viene ignorato
             "bytes" jsonReq2.getBytes()
         }
         try {

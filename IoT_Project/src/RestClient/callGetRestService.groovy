@@ -4,6 +4,9 @@ import wslite.http.auth.HTTPBasicAuthorization
 import wslite.rest.RESTClient
 import wslite.rest.RESTClientException
 
+/*
+ per la documentazione di groovy-wslite: https://github.com/jwagenleitner/groovy-wslite
+ */
 
 //RESTClient client = new RESTClient("https://46600771-8c98-4233-9437-783108b5d21f.eu10.cp.iot.sap/46600771-8c98-4233-9437-783108b5d21f/iot/core/api/v1/tenant/1")
 //client.authorization = new HTTPBasicAuthorization("dev", "!d3Vu5r_")
