@@ -30,7 +30,7 @@ restParam.headers = restHeaders
 println("Parametri per invocazione: $restParam")
 
 Closure cData = {
-    "type"  ContentType.URLENC  // se é valorizzato il campo inferiore questo tag viene ignorato
+    "type"  ContentType.URLENC
     "urlenc" restForm
 }
 

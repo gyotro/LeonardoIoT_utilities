@@ -1,3 +1,4 @@
 /bin/
 /src/mqtt/
 /src/RestClient/InstanceParameter.groovy
+/src/RestClient/callGetRestService.groovy
